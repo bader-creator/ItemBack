@@ -1,0 +1,93 @@
+<script type="text/javascript">
+  var produits ={{stock |json_encode | raw}};
+
+$(document).ready(function(){
+var array_produit=[];
+ var array_quantite=[];
+  console.log(produits)
+  var i=0; 
+  
+$('#item_table').append('<input type="hidden" name="id" value="{{ mission.id }}" />');
+ $(document).on('click', '.add', function(){
+  i++;
+  var html = '';
+   
+  html += '<tr>';
+  html += '<td><select name="produits['+i+']" class="form-control item_unit" placeholder="Nom produit"><option disabled selected>-select Nom produit-</option></select></td>';
+  html += '<td><input type="text" name="item_quantity['+i+']" class="form-control item_quantity" placeholder="Quantité"/></td>';
+  html += '<td><button type="button" name="remove['+i+']" class="btn btn-danger  remove">x</button></td></tr>';
+    
+  $('#item_table').append(html);
+
+  $.each(produits,function(key, value){
+  $('select[name="produits['+i+']"]').append('<option value="'+value.id+'">'+value.nomProduit+'</option>')
+ 
+})
+
+ });
+
+ $(document).on('click', '.remove', function(){
+ $(this).closest('tr').remove();
+ });
+ 
+ $( "#insert_form" ).submit(function( event ) {
+   var x = $( this ).serialize();
+  event.preventDefault();
+ 
+
+  var data_length = x.length;
+ console.log(x,'data_length')
+ 
+  console.log(array_quantite,"array_produit");
+  var error = '';
+  /*$('.item_quantity').each(function(){
+   var count = 1;
+   if($(this).val() == '')
+   {
+    error += "<p>Enter Item Quantity at "+count+" Row</p>";
+    return false;
+   }
+   count = count + 1;
+  });
+  
+  $('.item_unit').each(function(){
+   var count = 1;
+   if($(this).val() == '')
+   {
+    error += "<p>Select Unit at "+count+" Row</p>";
+    return false;
+   }
+   count = count + 1;
+
+  });*/
+
+
+
+ //embbad boucle for push kol array andha qnte w produit embaad nbaathom fl ajax
+ var url ="{{ path('add_materiel_page') }}";
+ 
+  if(error == '')
+  {
+   $.ajax({
+    url:url,
+    method:"POST",
+    data: $( this ).serialize(),
+    dataType: "json",
+    success:function(data)
+    {
+     if(data == 'ok')
+     {
+      $('#item_table').find("tr:gt(0)").remove();
+      $('#error').html('<div class="alert alert-success">Item Details Saved</div>');
+     }
+    }
+   });
+  }
+  else
+  {
+   $('#error').html('<div class="alert alert-danger">'+error+'</div>');
+  }
+ });
+ 
+});  
+</script>
